@@ -1,5 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.Extensions;
@@ -8,12 +11,14 @@ using SendGrid;
 using SendGrid.Helpers.Mail;
 using WorkingHoliday.Console.Properties;
 
-namespace RorkingHoliday.Console
+namespace WorkingHoliday.Console
 {
     class Program
     {
         static void Main(string[] args)
         {
+            SendServiceStartedEmail();
+
             IWebDriver driver;
             var options = new ChromeOptions();
             
@@ -29,24 +34,20 @@ namespace RorkingHoliday.Console
 
 
             IWebElement query = driver.FindElement(By.Name("username"));
-            query.SendKeys(Settings.Default.ImmigrationUsername);            
+            query.SendKeys(Settings.Default.ImmigrationUsername);
 
             IWebElement query2 = driver.FindElement(By.Name("password"));
             query2.SendKeys(Settings.Default.ImmigrationPassword);
 
             query2.Submit();
 
-            
             _wait.Until(d => d.FindElement(By.LinkText("Argentina/NZ Working Holiday Scheme")));
             IWebElement link = driver.FindElement(By.LinkText("Argentina/NZ Working Holiday Scheme"));
             link.Click();
 
             while (!DoPay(driver, _wait))
             {
-                SendErrorEmail();
                 System.Threading.Thread.Sleep(60 * 1000); // Sleep one minute.
-
-                driver.ExecuteJavaScript("alert('Fallo')");                
             }
 
             SendSuccessEmail();
@@ -56,34 +57,59 @@ namespace RorkingHoliday.Console
             driver.SwitchTo().Alert();
 
             driver.Quit();
+
+            SendServiceStoppedEmail();
         }
 
-        private static void SendErrorEmail()
+        private static void SendServiceStartedEmail()
         {
-            var apiKey = "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";
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress(Settings.Default.SuccessEmailFrom, "WORKING HOLIDAY ROBOT");
-            var subject = "FALLO";
-            //var to = new EmailAddress("elisaulloa1986@gmail.com", "Elisa");
-            var to = new EmailAddress(Settings.Default.SuccessEmailTo);
-            var plainTextContent = "FALLO";
-            var htmlContent = plainTextContent;
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            client.SendEmailAsync(msg);
+            var apiKey = Environment.GetEnvironmentVariable("WORKINGHOLIDAYEMAILKEY");
+
+            if (!string.IsNullOrWhiteSpace(apiKey))
+            {
+                var client = new SendGridClient(apiKey);
+                var from = new EmailAddress(Settings.Default.SuccessEmailFrom, "WORKING HOLIDAY ROBOT");
+                var subject = "WORKING HOLIDAY ROBOT STARTED!";
+                var to = new EmailAddress(Settings.Default.SuccessEmailTo);
+                var plainTextContent = $"Iniciado a las {DateTime.Now}";
+                var htmlContent = plainTextContent;
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+                client.SendEmailAsync(msg);
+            }
+        }
+
+        private static void SendServiceStoppedEmail()
+        {
+            var apiKey = Environment.GetEnvironmentVariable("WORKINGHOLIDAYEMAILKEY");
+
+            if (!string.IsNullOrWhiteSpace(apiKey))
+            {
+                var client = new SendGridClient(apiKey);
+                var from = new EmailAddress(Settings.Default.SuccessEmailFrom, "WORKING HOLIDAY ROBOT");
+                var subject = "WORKING HOLIDAY ROBOT STOPPED!";
+                var to = new EmailAddress(Settings.Default.SuccessEmailTo);
+                var plainTextContent = $"Finalizado a las {DateTime.Now}";
+                var htmlContent = plainTextContent;
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+                client.SendEmailAsync(msg);
+            }
         }
 
         private static void SendSuccessEmail()
         {
-            var apiKey = "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";
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress(Settings.Default.SuccessEmailFrom, "WORKING HOLIDAY ROBOT");
-            var subject = "DAME BOLA! SE ABRIO UN CUPO DE LA WORKING HOLIDAY!!!!";
-            //var to = new EmailAddress("elisaulloa1986@gmail.com", "Elisa");
-            var to = new EmailAddress(Settings.Default.SuccessEmailTo);
-            var plainTextContent = "Tenes un chrome abierto por ahi listo para pagar!!!!!";
-            var htmlContent = plainTextContent;
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            client.SendEmailAsync(msg);
+            var apiKey = Environment.GetEnvironmentVariable("WORKINGHOLIDAYEMAILKEY");
+
+            if (!string.IsNullOrWhiteSpace(apiKey))
+            {
+                var client = new SendGridClient(apiKey);
+                var from = new EmailAddress(Settings.Default.SuccessEmailFrom, "WORKING HOLIDAY ROBOT");
+                var subject = "DAME BOLA! SE ABRIO UN CUPO DE LA WORKING HOLIDAY!!!!";
+                var to = new EmailAddress(Settings.Default.SuccessEmailTo);
+                var plainTextContent = "Tenes un chrome abierto por ahi listo para pagar!!!!!";
+                var htmlContent = plainTextContent;
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+                client.SendEmailAsync(msg);
+            }
         }
 
         private static bool DoPay(IWebDriver driver, IWait<IWebDriver> _wait)
