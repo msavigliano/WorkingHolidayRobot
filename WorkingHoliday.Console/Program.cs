@@ -34,9 +34,11 @@ namespace WorkingHoliday.Console
 
 
             IWebElement query = driver.FindElement(By.Name("username"));
+            query.Clear();
             query.SendKeys(Settings.Default.ImmigrationUsername);
 
             IWebElement query2 = driver.FindElement(By.Name("password"));
+            query2.Clear();
             query2.SendKeys(Settings.Default.ImmigrationPassword);
 
             query2.Submit();
