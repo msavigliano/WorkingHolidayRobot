@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="WorkingHoliday.Console.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ImmigrationUsername" Type="System.String" Scope="User">
+      <Value Profile="(Default)">elisau</Value>
+    </Setting>
+    <Setting Name="ImmigrationPassword" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Elisaulloa123</Value>
+    </Setting>
+    <Setting Name="SuccessEmailTo" Type="System.String" Scope="User">
+      <Value Profile="(Default)">mauricio.savigliano@gmail.com</Value>
+    </Setting>
+    <Setting Name="SuccessEmailFrom" Type="System.String" Scope="User">
+      <Value Profile="(Default)">mauricio.savigliano@gmail.com</Value>
+    </Setting>
+    <Setting Name="PayerName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">MAURICIO SAVIGLIANO</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
