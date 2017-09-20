@@ -29,3 +29,7 @@ D:\Dev\GitHub\Private\WorkingHolidayRobot\WorkingHoliday.Console\bin\Debug\SendG
 D:\Dev\GitHub\Private\WorkingHolidayRobot\WorkingHoliday.Console\bin\Debug\WebDriver.xml
 D:\Dev\GitHub\Private\WorkingHolidayRobot\WorkingHoliday.Console\bin\Debug\WebDriver.Support.xml
 D:\Dev\GitHub\Private\WorkingHolidayRobot\WorkingHoliday.Console\obj\Debug\WorkingHoliday.Console.csprojResolveAssemblyReference.cache
+D:\Dev\GitHub\Private\WorkingHolidayRobot\WorkingHoliday.Console\bin\Debug\WorkingHoliday.Console.exe.manifest
+D:\Dev\GitHub\Private\WorkingHolidayRobot\WorkingHoliday.Console\bin\Debug\WorkingHoliday.Console.application
+D:\Dev\GitHub\Private\WorkingHolidayRobot\WorkingHoliday.Console\obj\Debug\WorkingHoliday.Console.exe.manifest
+D:\Dev\GitHub\Private\WorkingHolidayRobot\WorkingHoliday.Console\obj\Debug\WorkingHoliday.Console.application

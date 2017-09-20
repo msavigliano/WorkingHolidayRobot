@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
+using System.Threading.Tasks;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.Extensions;
@@ -15,17 +13,18 @@ namespace WorkingHoliday.Console
 {
     class Program
     {
+        private static SendGridClient _emailClient = new SendGridClient(Environment.GetEnvironmentVariable("WORKINGHOLIDAYEMAILKEY", EnvironmentVariableTarget.Machine));
+
         static void Main(string[] args)
         {
             SendServiceStartedEmail();
 
             IWebDriver driver;
             var options = new ChromeOptions();
-            
+
             driver = new ChromeDriver(options);
             driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(20);
             driver.Navigate().GoToUrl("https://onlineservices.immigration.govt.nz/?STATUS");
-
 
             var _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
 
@@ -58,60 +57,45 @@ namespace WorkingHoliday.Console
             driver.ExecuteJavaScript("alert('Listo para pagar!!!')");
             driver.SwitchTo().Alert();
 
-            driver.Quit();
-
             SendServiceStoppedEmail();
+
+            System.Console.WriteLine("Press enter to finish the robot.");
+            System.Console.ReadLine();
         }
 
-        private static void SendServiceStartedEmail()
+        private static async void SendServiceStartedEmail()
         {
-            var apiKey = Environment.GetEnvironmentVariable("WORKINGHOLIDAYEMAILKEY");
+            var from = new EmailAddress(Settings.Default.SuccessEmailFrom, "WORKING HOLIDAY ROBOT");
+            var subject = "WORKING HOLIDAY ROBOT STARTED!";
+            var to = new EmailAddress(Settings.Default.SuccessEmailTo);
+            var plainTextContent = $"Iniciado a las {DateTime.Now}";
+            var htmlContent = plainTextContent;
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            await _emailClient.SendEmailAsync(msg);
 
-            if (!string.IsNullOrWhiteSpace(apiKey))
-            {
-                var client = new SendGridClient(apiKey);
-                var from = new EmailAddress(Settings.Default.SuccessEmailFrom, "WORKING HOLIDAY ROBOT");
-                var subject = "WORKING HOLIDAY ROBOT STARTED!";
-                var to = new EmailAddress(Settings.Default.SuccessEmailTo);
-                var plainTextContent = $"Iniciado a las {DateTime.Now}";
-                var htmlContent = plainTextContent;
-                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-                client.SendEmailAsync(msg);
-            }
         }
 
-        private static void SendServiceStoppedEmail()
+        private static async void SendServiceStoppedEmail()
         {
-            var apiKey = Environment.GetEnvironmentVariable("WORKINGHOLIDAYEMAILKEY");
+            var from = new EmailAddress(Settings.Default.SuccessEmailFrom, "WORKING HOLIDAY ROBOT");
+            var subject = "WORKING HOLIDAY ROBOT STOPPED!";
+            var to = new EmailAddress(Settings.Default.SuccessEmailTo);
+            var plainTextContent = $"Finalizado a las {DateTime.Now}";
+            var htmlContent = plainTextContent;
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            await _emailClient.SendEmailAsync(msg);
 
-            if (!string.IsNullOrWhiteSpace(apiKey))
-            {
-                var client = new SendGridClient(apiKey);
-                var from = new EmailAddress(Settings.Default.SuccessEmailFrom, "WORKING HOLIDAY ROBOT");
-                var subject = "WORKING HOLIDAY ROBOT STOPPED!";
-                var to = new EmailAddress(Settings.Default.SuccessEmailTo);
-                var plainTextContent = $"Finalizado a las {DateTime.Now}";
-                var htmlContent = plainTextContent;
-                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-                client.SendEmailAsync(msg);
-            }
         }
 
-        private static void SendSuccessEmail()
+        private static async void SendSuccessEmail()
         {
-            var apiKey = Environment.GetEnvironmentVariable("WORKINGHOLIDAYEMAILKEY");
-
-            if (!string.IsNullOrWhiteSpace(apiKey))
-            {
-                var client = new SendGridClient(apiKey);
-                var from = new EmailAddress(Settings.Default.SuccessEmailFrom, "WORKING HOLIDAY ROBOT");
-                var subject = "DAME BOLA! SE ABRIO UN CUPO DE LA WORKING HOLIDAY!!!!";
-                var to = new EmailAddress(Settings.Default.SuccessEmailTo);
-                var plainTextContent = "Tenes un chrome abierto por ahi listo para pagar!!!!!";
-                var htmlContent = plainTextContent;
-                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-                client.SendEmailAsync(msg);
-            }
+            var from = new EmailAddress(Settings.Default.SuccessEmailFrom, "WORKING HOLIDAY ROBOT");
+            var subject = "DAME BOLA! SE ABRIO UN CUPO DE LA WORKING HOLIDAY!!!!";
+            var to = new EmailAddress(Settings.Default.SuccessEmailTo);
+            var plainTextContent = "Tenes un chrome abierto por ahi listo para pagar!!!!!";
+            var htmlContent = plainTextContent;
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            await _emailClient.SendEmailAsync(msg);
         }
 
         private static bool DoPay(IWebDriver driver, IWait<IWebDriver> _wait)
